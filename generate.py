@@ -15,11 +15,17 @@ if __name__ == '__main__':
   c = Calendar()
   c.add("version", "2.0")
 
-  year = datetime.today().year
+  year       = datetime.today().year
+  base_month = datetime.today().month
 
   items = bs.find_all("ul", class_="off_calendar_list")
   for item in items:
     month = int(item.find("span", class_="off_calendar_month").text.strip("/"))
+
+    if month < base_month:
+      base_month = month
+      year       = year + 1
+
     for i in item.find_all("span", class_="off_calendar_day"):
       day = int(i.text)
 
