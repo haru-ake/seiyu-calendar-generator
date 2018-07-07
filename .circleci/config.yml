@@ -1,0 +1,40 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - run:
+          name: Run test
+          command: make deps; make test
+
+  release:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - run:
+          name: Generate an ics file
+          command: make
+      - deploy:
+          command: |
+            cd ./release
+            make
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
+
+  release:
+    triggers:
+      - schedule:
+          cron: "7 3 * * 6"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - release
